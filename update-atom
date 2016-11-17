@@ -1,0 +1,43 @@
+#!/bin/bash
+download_location="$HOME/Downloads/atom-amd64.deb"
+download_url="https://atom.io/download/deb"
+
+function getLatestAtomVersion()
+{
+	latestVersion=$(curl -I $download_url 2>/dev/null | grep Location: | sed -r 's/.*v([0-9\.]+).*/\1/')
+	echo $latestVersion
+}
+
+function getInstalledAtomVersion()
+{
+	installedAtomVersion=$(atom -v | grep Atom | sed 's/.*: //')
+	echo $installedAtomVersion
+}
+
+installedVersion=$(getInstalledAtomVersion)
+latestVersion=$(getLatestAtomVersion)
+echo "[-] Installed Atom version: $installedVersion"
+echo "[-] Latest Atom version:    $latestVersion"
+if [ "x$installedVersion" == "x$latestVersion" ]
+then
+	echo "[-] Atom already up-to-date; aborting."
+	exit 0
+fi
+
+if [ -e $download_location ]
+then
+	echo "[-] Removing existing file $download_location"
+	rm -f $download_location
+fi
+
+echo "[-] Downloading latest atom-amd64.deb"
+wget -O $download_location $download_url
+if [ $? -ne 0 ]
+then
+	echo "[!] Download failed, aborting"
+	echo "[?] Are you connected to the innanet?"
+	exit 1
+fi
+
+echo "[-] Installing new atom with MD5 $new_md5"
+sudo dpkg -i $download_location
