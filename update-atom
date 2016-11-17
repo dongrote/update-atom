@@ -39,5 +39,5 @@ then
 	exit 1
 fi
 
-echo "[-] Installing new atom with MD5 $new_md5"
+echo "[-] Installing new atom"
 sudo dpkg -i $download_location
